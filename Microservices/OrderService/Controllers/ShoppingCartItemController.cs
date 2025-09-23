@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrderService.ServiceContracts;
 
 namespace OrderService.Controllers
 {
-    public class ShoppingCartItemController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ShoppingCartItemController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        private readonly IShoppingCartService _svc;
+        public ShoppingCartItemController(IShoppingCartService svc) { _svc = svc; }
+
+        [HttpDelete("DeleteShoppingCartItemById")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+            => await _svc.DeleteItemAsync(id) ? NoContent() : NotFound();
     }
 }

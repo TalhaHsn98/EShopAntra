@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
+using OrderService.Repositories;
+using OrderService.RepositoryContracts;
+using OrderService.ServiceContracts;
+using OrderService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +16,14 @@ builder.Services.AddDbContext<OrdersDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
+builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+
 
 var app = builder.Build();
 
