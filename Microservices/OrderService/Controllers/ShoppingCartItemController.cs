@@ -8,7 +8,11 @@ namespace OrderService.Controllers
     public class ShoppingCartItemController : ControllerBase
     {
         private readonly IShoppingCartService _svc;
-        public ShoppingCartItemController(IShoppingCartService svc) { _svc = svc; }
+
+        public ShoppingCartItemController(IShoppingCartService svc)
+        {
+            _svc = svc;
+        }
 
         [HttpDelete("DeleteShoppingCartItemById")]
         public async Task<IActionResult> DeleteById([FromQuery] int id)

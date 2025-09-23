@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
+using OrderService.Mapping;
 using OrderService.Repositories;
 using OrderService.RepositoryContracts;
 using OrderService.ServiceContracts;
@@ -16,6 +17,9 @@ builder.Services.AddDbContext<OrdersDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(OrderServiceProfile));
+
 
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
