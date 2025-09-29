@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Mapping;
+using OrderService.Messaging;
 using OrderService.Repositories;
 using OrderService.RepositoryContracts;
 using OrderService.ServiceContracts;
@@ -20,6 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(OrderServiceProfile));
 
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
+builder.Services.AddSingleton<IOrderEventPublisher, RabbitMqOrderEventPublisher>();
 
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
@@ -48,7 +51,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!builder.Environment.IsEnvironment("Development"))
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

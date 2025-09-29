@@ -11,3 +11,24 @@ services:
       context: .
       dockerfile: OrderService/Dockerfile
 
+
+  promotionservice:
+    image: ${DOCKER_REGISTRY-}promotionservice
+    build:
+      context: .
+      dockerfile: PromotionService/Dockerfile
+
+
+  reviewservice:
+    image: ${DOCKER_REGISTRY-}reviewservice
+    build:
+      context: .
+      dockerfile: ReviewService/Dockerfile
+
+
+  shippingservice:
+    image: ${DOCKER_REGISTRY-}shippingservice
+    build:
+      context: .
+      dockerfile: ShippingService/Dockerfile
+

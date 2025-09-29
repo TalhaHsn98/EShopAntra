@@ -10,15 +10,7 @@
     <DockerServiceName>productservice</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\OrderService\OrderService.csproj" />
-		<ProjectReference Include="..\ProductService\ProductService.csproj" />
-	</ItemGroup>
 </Project>

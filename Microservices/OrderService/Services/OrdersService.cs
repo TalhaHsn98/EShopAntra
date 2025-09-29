@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using OrderService.DTO;
+using OrderService.Events;
+using OrderService.Messaging;
 using OrderService.Models;
 using OrderService.Repositories;
 using OrderService.RepositoryContracts;
@@ -11,22 +13,40 @@ namespace OrderService.Services
     {
         private readonly IOrderRepository _orders;
         private readonly IRepository<OrderDetail> _details;
-        private readonly IUnitOfWork _uow;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IOrderEventPublisher _orderEventPublisher;
 
-        public OrdersService(IOrderRepository orders, IRepository<OrderDetail> details, IUnitOfWork uow, IMapper mapper)
+        public OrdersService(
+            IOrderRepository orders,
+            IRepository<OrderDetail> details,
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IOrderEventPublisher orderEventPublisher)
         {
-            _orders = orders; _details = details; _uow = uow; _mapper = mapper;
+            _orders = orders;
+            _details = details;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _orderEventPublisher = orderEventPublisher;
         }
 
         public async Task<List<Order>> GetAllAsync()
-            => (await _orders.GetAllWithDetailsAsync()).ToList();
+        {
+            var list = await _orders.GetAllWithDetailsAsync();
+            return list.ToList();
+        }
 
         public async Task<List<Order>> GetByCustomerAsync(int customerId)
-            => (await _orders.GetByCustomerWithDetailsAsync(customerId)).ToList();
+        {
+            var list = await _orders.GetByCustomerWithDetailsAsync(customerId);
+            return list.ToList();
+        }
 
         public Task<Order?> GetByIdAsync(int id)
-            => _orders.GetByIdWithDetailsAsync(id);
+        {
+            return _orders.GetByIdWithDetailsAsync(id);
+        }
 
         public async Task<int> CreateAsync(OrderCreateRequest dto)
         {
@@ -35,7 +55,7 @@ namespace OrderService.Services
             order.OrderStatus = "Placed";
             order.BillAmount = ComputeBill(order);
             await _orders.AddAsync(order);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return order.Id;
         }
 
@@ -43,6 +63,7 @@ namespace OrderService.Services
         {
             var existing = await _orders.GetByIdWithDetailsAsync(dto.Id);
             if (existing is null) return false;
+
             existing.CustomerId = dto.CustomerId;
             existing.CustomerName = dto.CustomerName;
             existing.PaymentMethodId = dto.PaymentMethodId;
@@ -50,6 +71,7 @@ namespace OrderService.Services
             existing.ShippingMethod = dto.ShippingMethod;
             existing.ShippingAddress = dto.ShippingAddress;
             existing.OrderStatus = dto.OrderStatus;
+
             if (existing.Details.Any()) await _details.DeleteRangeAsync(existing.Details);
             existing.Details = dto.Details.Select(d => new OrderDetail
             {
@@ -59,9 +81,10 @@ namespace OrderService.Services
                 Price = d.Price,
                 Discount = d.Discount
             }).ToList();
+
             existing.BillAmount = ComputeBill(existing);
             await _orders.UpdateAsync(existing);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
@@ -73,11 +96,35 @@ namespace OrderService.Services
 
         public async Task<bool> MarkCompletedAsync(int orderId)
         {
-            var order = await _orders.GetByIdAsync(orderId);
+            var order = await _orders.GetByIdWithDetailsAsync(orderId);
             if (order is null) return false;
+
             order.OrderStatus = "Completed";
             await _orders.UpdateAsync(order);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
+
+            var evt = new OrderCompletedEvent
+            {
+                OrderId = order.Id,
+                OrderDateUtc = order.OrderDate,
+                CustomerId = order.CustomerId,
+                CustomerName = order.CustomerName,
+                ShippingMethod = order.ShippingMethod,
+                ShippingAddress = order.ShippingAddress,
+                PaymentMethodId = order.PaymentMethodId,
+                PaymentName = order.PaymentName,
+                BillAmount = order.BillAmount,
+                Items = order.Details.Select(d => new OrderCompletedEventItem
+                {
+                    ProductId = d.ProductId,
+                    ProductName = d.ProductName,
+                    Qty = d.Qty,
+                    Price = d.Price,
+                    Discount = d.Discount
+                }).ToList()
+            };
+
+            await _orderEventPublisher.PublishOrderCompletedAsync(evt);
             return true;
         }
 
@@ -87,11 +134,13 @@ namespace OrderService.Services
             if (order is null) return false;
             order.OrderStatus = "Cancelled";
             await _orders.UpdateAsync(order);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
         private decimal ComputeBill(Order order)
-            => order.Details?.Sum(d => (d.Price - d.Discount) * d.Qty) ?? 0m;
+        {
+            return order.Details?.Sum(d => (d.Price - d.Discount) * d.Qty) ?? 0m;
+        }
     }
 }

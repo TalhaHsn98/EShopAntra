@@ -1,12 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using PromotionService.DTOs;
+using PromotionService.Models;
 
 namespace PromotionService.Mapping
 {
-    public class PromotionsMappingProfile : Controller
+    public class PromotionsMappingProfile : Profile
     {
-        public IActionResult Index()
+        public PromotionsMappingProfile()
         {
-            return View();
+            CreateMap<PromotionDetailRequest, PromotionDetail>();
+            CreateMap<PromotionCreateRequest, Promotion>();
+            CreateMap<PromotionUpdateRequest, Promotion>();
+
+            CreateMap<PromotionDetail, PromotionDetailResponse>();
+            CreateMap<Promotion, PromotionResponse>();
         }
     }
 }

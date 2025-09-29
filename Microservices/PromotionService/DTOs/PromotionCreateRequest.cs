@@ -2,11 +2,12 @@
 
 namespace PromotionService.DTOs
 {
-    public class PromotionCreateRequest : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
+    public record PromotionCreateRequest(
+    string Name,
+    string? Description,
+    double Discount,
+    DateTime StartDate,
+    DateTime? EndDate,
+    List<PromotionDetailRequest> Details
+);
 }

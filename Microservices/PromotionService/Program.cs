@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PromotionService.Data;
+using PromotionService.Mapping;
+using PromotionService.RepositoryContracts;
+using PromotionService.Service;
+using PromotionService.ServiceContracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +13,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(PromotionsMappingProfile).Assembly);
+
+builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+builder.Services.AddScoped<IPromotionService, PromotionsService>();
 
 builder.Services.AddDbContext<PromotionDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EshopDb"))
