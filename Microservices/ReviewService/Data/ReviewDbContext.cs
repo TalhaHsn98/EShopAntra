@@ -22,6 +22,8 @@ namespace ReviewService.Data
                 e.Property(p => p.Rating_value).HasDefaultValue((byte)5);
                 e.Property(p => p.Review_Date).HasColumnType("datetime2");
                 e.Property(p => p.Order_Date).HasColumnType("datetime2");
+                e.Property(p => p.Status).HasConversion<int>().HasDefaultValue(ReviewStatus.Pending);
+
             });
         }
     }

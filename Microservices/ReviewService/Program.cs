@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using ReviewService.Data;
+using ReviewService.Mapping;
+using ReviewService.Repositories;
+using ReviewService.RepositoryContracts;
+using ReviewService.ServiceContracts;
+using ReviewService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +14,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ReviewDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EshopDb")));
+
+builder.Services.AddScoped<ICustomerReviewRepository, CustomerReviewRepository>();
+builder.Services.AddScoped<ICustomerReviewService, CustomerReviewService>();
+builder.Services.AddAutoMapper(typeof(ReviewProfile).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

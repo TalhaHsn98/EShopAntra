@@ -64,6 +64,11 @@ namespace ReviewService.Migrations
                     b.Property<DateTime>("Review_Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.HasKey("Id");
 
                     b.ToTable("Customer_Review");

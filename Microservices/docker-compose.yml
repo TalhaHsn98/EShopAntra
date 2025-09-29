@@ -1,13 +1,13 @@
 services:
-  orderservice:
-    image: ${DOCKER_REGISTRY-}orderservice
-    build:
-      context: .
-      dockerfile: OrderService/Dockerfile
-
   productservice:
     image: ${DOCKER_REGISTRY-}productservice
     build:
       context: .
       dockerfile: ProductService/Dockerfile
+
+  orderservice:
+    image: ${DOCKER_REGISTRY-}orderservice
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
 

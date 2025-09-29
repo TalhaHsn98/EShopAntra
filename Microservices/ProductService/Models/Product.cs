@@ -23,6 +23,8 @@ namespace ProductService.Models
         public string? ProductImage { get; set; }
         [Required, MaxLength(100)]
         public string SKU { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
+
         public ICollection<ProductVariationValue> VariationValues { get; set; } = new List<ProductVariationValue>();
     }
 }

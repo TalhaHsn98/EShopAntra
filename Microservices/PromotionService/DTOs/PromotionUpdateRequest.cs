@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace ShippingService.Controllers
+namespace PromotionService.DTOs
 {
-    public class ShippingController : Controller
+    public class PromotionUpdateRequest : Controller
     {
         public IActionResult Index()
         {

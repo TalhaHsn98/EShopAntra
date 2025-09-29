@@ -35,5 +35,8 @@ namespace ReviewService.Models
 
         [Required]
         public DateTime Review_Date { get; set; }
+
+        [Required] public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
+
     }
 }

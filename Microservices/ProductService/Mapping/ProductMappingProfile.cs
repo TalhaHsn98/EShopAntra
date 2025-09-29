@@ -15,6 +15,16 @@ namespace ProductService.Mapping
 
             CreateMap<CategoryVariation, CategoryVariationDto>();
             CreateMap<CategoryVariationCreateRequest, CategoryVariation>();
+
+
+
+            CreateMap<ProductCreateRequest, Product>();
+            CreateMap<ProductUpdateRequest, Product>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(d => d.VariationValueIds, m => m.MapFrom(s => s.VariationValues.Select(v => v.VariationValueId)));
+
+            CreateMap<VariationValueCreateRequest, VariationValue>();
+            CreateMap<VariationValue, VariationValueDto>();
         }
     }
 }

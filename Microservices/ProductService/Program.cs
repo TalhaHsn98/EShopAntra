@@ -22,6 +22,16 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryVariationRepository, CategoryVariationRepository>();
 builder.Services.AddScoped<ICategoryVariationService, CategoryVariationService>();
 
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductsService>();
+
+builder.Services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
+builder.Services.AddScoped<IProductVariationService, ProductVariationService>();
+
+builder.Services.AddScoped<IVariationValueRepository, VariationValueRepository>();
+builder.Services.AddScoped<IVariationValueService, VariationValueService>();
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

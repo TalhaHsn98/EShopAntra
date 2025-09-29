@@ -5,7 +5,9 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "orderservice": "StartDebugging",
-        "productservice": "StartDebugging"
+        "productservice": "StartDebugging",
+        "reviewservice": "StartDebugging",
+        "shippingservice": "StartDebugging"
       }
     }
   }
